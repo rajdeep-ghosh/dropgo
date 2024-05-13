@@ -1,6 +1,8 @@
 import '@/styles/global.css';
 import { Inter, Poppins } from 'next/font/google';
+import { cn } from '@/lib/utils';
 import Header from '@/components/header';
+import Footer from '@/components/footer';
 import type { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -19,9 +21,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <html lang='en'>
-      <body className={`${inter.className} ${poppins.variable}`}>
+      <body
+        className={cn(
+          inter.className,
+          poppins.variable,
+          'bg-gray-900 text-white'
+        )}
+      >
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );
