@@ -9,7 +9,7 @@ export default function Header() {
           <Cloud className='size-6' />
           <span className='font-poppins text-lg'>DropGo</span>
         </Link>
-        <div className='flex items-center gap-6 sm:gap-8'>
+        <div className='flex items-center gap-6 text-white sm:gap-8'>
           <Link href='https://github.com/rajdeep-ghosh/dropgo' target='_blank'>
             <Github className='size-6' />
             <span className='sr-only'>github</span>

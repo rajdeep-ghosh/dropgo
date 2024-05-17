@@ -25,7 +25,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
         className={cn(
           inter.className,
           poppins.variable,
-          'bg-gray-900 text-white'
+          'bg-gray-900 antialiased'
         )}
       >
         <Header />
