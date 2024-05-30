@@ -2,7 +2,7 @@ import '@/styles/global.css';
 import { Inter, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import Header from '@/components/header';
-import Footer from '@/components/footer';
+// import Footer from '@/components/footer';
 import type { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
       >
         <Header />
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );
