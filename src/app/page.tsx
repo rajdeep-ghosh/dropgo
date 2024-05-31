@@ -5,7 +5,7 @@ import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
-  const [selectedFile, setSelectedFile] = useState<File>();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   function handleFileInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return;
@@ -46,7 +46,7 @@ export default function HomePage() {
           <div className='mt-4 flex justify-end gap-4'>
             {selectedFile && (
               <Button
-                onClick={() => setSelectedFile(undefined)}
+                onClick={() => setSelectedFile(null)}
                 className='w-full sm:w-auto'
               >
                 Clear
