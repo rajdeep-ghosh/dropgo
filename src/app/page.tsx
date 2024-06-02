@@ -26,12 +26,17 @@ export default function HomePage() {
           </p>
         </div>
         <div className='rounded-lg border border-gray-700 bg-gray-800 p-8 shadow-lg'>
-          <div className='relative flex h-48 flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-500 bg-gray-700 text-gray-400'>
+          <div className='relative flex h-48 flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-500 bg-gray-700 text-white'>
             {!selectedFile ? (
               <>
                 <div className='space-y-2 text-center'>
-                  <Upload className='mx-auto size-10' />
-                  <p>Drag and drop files or click to select</p>
+                  <Upload className='mx-auto size-10 text-gray-400' />
+                  <p className='text-white'>
+                    Drag and drop files here or click to select
+                  </p>
+                  <span className='text-sm text-gray-400'>
+                    For multiple file uploads zip them
+                  </span>
                 </div>
                 <input
                   type='file'
