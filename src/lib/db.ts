@@ -6,7 +6,7 @@ async function dbConnect() {
     return;
 
   try {
-    await mongoose.connect('mongodb://localhost:27017', {
+    await mongoose.connect(process.env.MONGODB_URI, {
       dbName: 'dropgo_db'
     });
     console.log('connected to db');
