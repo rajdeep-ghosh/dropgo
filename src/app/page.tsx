@@ -108,10 +108,10 @@ export default function HomePage() {
                 <div className='space-y-2 text-center'>
                   <Upload className='mx-auto size-10 text-gray-400' />
                   <p className='text-white'>
-                    Drag and drop files here or click to select
+                    Drag and drop files here, or click to select
                   </p>
                   <span className='text-sm text-gray-400'>
-                    For multiple file uploads zip them
+                    For multiple files zip them (max size 200 MB)
                   </span>
                 </div>
                 <input
