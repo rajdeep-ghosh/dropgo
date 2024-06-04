@@ -1,6 +1,7 @@
 import '@/styles/global.css';
 import { Inter, Poppins } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import ThemeProvider from '@/components/theme-provider';
 import Header from '@/components/header';
 // import Footer from '@/components/footer';
 import { Toaster } from '@/components/ui/toaster';
@@ -22,17 +23,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <html lang='en'>
-      <body
-        className={cn(
-          inter.className,
-          poppins.variable,
-          'bg-gray-900 antialiased'
-        )}
-      >
-        <Header />
-        {children}
-        {/* <Footer /> */}
-        <Toaster />
+      <body className={cn(inter.className, poppins.variable, 'antialiased')}>
+        <ThemeProvider attribute='class' defaultTheme='system'>
+          <Header />
+          {children}
+          {/* <Footer /> */}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
