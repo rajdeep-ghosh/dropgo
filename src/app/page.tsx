@@ -1,14 +1,27 @@
 'use client';
 
 import { useState } from 'react';
-import { File, Loader2, Upload } from 'lucide-react';
+import { Check, Copy, File, Loader2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import type { UploadAPIRespData } from '@/types';
 
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [respData, setRespData] = useState<UploadAPIRespData['success']>();
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   const { toast } = useToast();
 
@@ -44,6 +57,7 @@ export default function HomePage() {
       });
       if (!s3Resp.ok) throw new Error('upload failed');
 
+      setRespData(data.success);
       toast({
         title: 'Success 🥳',
         description: 'File uploaded successfully'
@@ -60,6 +74,19 @@ export default function HomePage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function handleCopyToClipboard() {
+    await navigator.clipboard.writeText(
+      `${process.env.NEXT_PUBLIC_URL}/f/${respData?._id}`
+    );
+    setCopiedToClipboard(true);
+    setTimeout(() => setCopiedToClipboard(false), 2000);
+  }
+
+  function handleAppStateReset() {
+    setSelectedFile(null);
+    setRespData(undefined);
   }
 
   return (
@@ -101,31 +128,83 @@ export default function HomePage() {
             )}
           </div>
           <div className='mt-4 flex justify-end gap-4'>
-            {selectedFile && (
+            {selectedFile && respData ? (
+              <Button
+                onClick={handleAppStateReset}
+                className='w-full sm:w-auto'
+              >
+                Reset
+              </Button>
+            ) : selectedFile && !respData ? (
               <Button
                 onClick={() => setSelectedFile(null)}
                 className='w-full sm:w-auto'
               >
                 Clear
               </Button>
+            ) : null}
+            {respData ? (
+              <Button
+                variant='secondary'
+                onClick={() => setShareDialogOpen(true)}
+                className='w-full sm:w-auto'
+              >
+                Share
+              </Button>
+            ) : (
+              <Button
+                variant='secondary'
+                disabled={selectedFile && !isLoading ? false : true}
+                onClick={handleFileUpload}
+                className='w-full sm:w-auto'
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Please wait
+                  </>
+                ) : (
+                  <>Upload File</>
+                )}
+              </Button>
             )}
-            <Button
-              variant='secondary'
-              disabled={selectedFile && !isLoading ? false : true}
-              onClick={handleFileUpload}
-              className='w-full sm:w-auto'
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Please wait
-                </>
-              ) : (
-                <>Upload File</>
-              )}
-            </Button>
           </div>
         </div>
+        <AlertDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Share this file</AlertDialogTitle>
+              <AlertDialogDescription>
+                Copy the link below and share it with your friends and
+                colleagues.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className='flex items-center space-x-2'>
+              <Input
+                type='text'
+                value={`${process.env.NEXT_PUBLIC_URL}/f/${respData?._id}`}
+                readOnly
+                className='flex-1'
+              />
+              <Button
+                variant='secondary'
+                size='icon'
+                onClick={handleCopyToClipboard}
+                className='shrink-0'
+              >
+                {copiedToClipboard ? (
+                  <Check className='size-5' />
+                ) : (
+                  <Copy className='size-5' />
+                )}
+                <span className='sr-only'>Copy link</span>
+              </Button>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </main>
   );
