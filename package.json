@@ -16,6 +16,8 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.588.0",
+    "@aws-sdk/s3-request-presigner": "^3.588.0",
     "@radix-ui/react-slot": "^1.0.2",
     "lucide-react": "^0.378.0",
     "mongoose": "^8.4.0",

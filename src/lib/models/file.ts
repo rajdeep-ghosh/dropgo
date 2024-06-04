@@ -2,21 +2,22 @@ import mongoose from 'mongoose';
 
 const fileSchema = new mongoose.Schema(
   {
-    filename: {
+    name: {
       type: String,
       required: true
     },
-    filesize: {
+    size: {
       type: Number,
       required: true
     },
-    status: {
-      type: Number,
-      enum: [0, 1],
-      default: 0,
+    type: {
+      type: String,
       required: true
     },
-    url: String
+    key: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );
