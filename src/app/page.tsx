@@ -182,7 +182,7 @@ export default function HomePage() {
             <div className='flex items-center space-x-2'>
               <Input
                 type='text'
-                value={`${process.env.NEXT_PUBLIC_URL}/f/${respData?._id}`}
+                value={`${process.env.NEXT_PUBLIC_URL}/s/${respData?._id}`}
                 readOnly
                 className='flex-1'
               />
