@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy, File, Loader2, Upload } from 'lucide-react';
+import { Check, Copy, File, Loader2, Share, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -90,122 +90,120 @@ export default function HomePage() {
   }
 
   return (
-    <main className='py-20'>
-      <div className='mx-auto grid max-w-3xl gap-8 px-4 sm:px-6 lg:px-8'>
-        <div className='space-y-4 text-center'>
-          <h1 className='font-poppins text-4xl font-bold tracking-tight text-white sm:text-5xl'>
-            Simple, Secure File Storage
-          </h1>
-          <p className='text-lg text-gray-300'>
-            DropGo makes it easy to store files temporarily and share them. Your
-            uploaded files will be automatically deleted after 24 hours.
-          </p>
-        </div>
-        <div className='rounded-lg border border-gray-700 bg-gray-800 p-8 shadow-lg'>
-          <div className='relative flex h-48 flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-500 bg-gray-700 text-white'>
-            {!selectedFile ? (
-              <>
-                <div className='space-y-2 text-center'>
-                  <Upload className='mx-auto size-10 text-gray-400' />
-                  <p className='text-white'>
-                    Drag and drop files here, or click to select
-                  </p>
-                  <span className='text-sm text-gray-400'>
-                    For multiple files zip them (max size 200 MB)
-                  </span>
-                </div>
-                <input
-                  type='file'
-                  onChange={handleFileInputChange}
-                  className='absolute size-full cursor-pointer opacity-0'
-                />
-              </>
-            ) : (
-              <div className='flex gap-x-2'>
-                <File className='size-6' />
-                <span>{selectedFile.name}</span>
-              </div>
-            )}
-          </div>
-          <div className='mt-4 flex justify-end gap-4'>
-            {selectedFile && respData ? (
-              <Button
-                onClick={handleAppStateReset}
-                className='w-full sm:w-auto'
-              >
-                Reset
-              </Button>
-            ) : selectedFile && !respData ? (
-              <Button
-                onClick={() => setSelectedFile(null)}
-                className='w-full sm:w-auto'
-              >
-                Clear
-              </Button>
-            ) : null}
-            {respData ? (
-              <Button
-                variant='secondary'
-                onClick={() => setShareDialogOpen(true)}
-                className='w-full sm:w-auto'
-              >
-                Share
-              </Button>
-            ) : (
-              <Button
-                variant='secondary'
-                disabled={selectedFile && !isLoading ? false : true}
-                onClick={handleFileUpload}
-                className='w-full sm:w-auto'
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Please wait
-                  </>
-                ) : (
-                  <>Upload File</>
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
-        <AlertDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Share this file</AlertDialogTitle>
-              <AlertDialogDescription>
-                Copy the link below and share it with your friends and
-                colleagues.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className='flex items-center space-x-2'>
-              <Input
-                type='text'
-                value={`${process.env.NEXT_PUBLIC_URL}/s/${respData?._id}`}
-                readOnly
-                className='flex-1'
-              />
-              <Button
-                variant='secondary'
-                size='icon'
-                onClick={handleCopyToClipboard}
-                className='shrink-0'
-              >
-                {copiedToClipboard ? (
-                  <Check className='size-5' />
-                ) : (
-                  <Copy className='size-5' />
-                )}
-                <span className='sr-only'>Copy link</span>
-              </Button>
-            </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Close</AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+    <div className='mx-auto grid max-w-3xl gap-8 px-4 sm:px-6 lg:px-8'>
+      <div className='space-y-4 text-center'>
+        <h1 className='font-poppins text-4xl font-bold tracking-tight text-white sm:text-5xl'>
+          Simple, Secure File Storage
+        </h1>
+        <p className='text-lg text-gray-300'>
+          DropGo makes it easy to store files temporarily and share them. Your
+          uploaded files will be automatically deleted after 24 hours.
+        </p>
       </div>
-    </main>
+      <div className='rounded-lg border border-gray-700 bg-gray-800 p-8 shadow-lg'>
+        <div className='relative flex h-48 flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-500 bg-gray-700 text-white'>
+          {!selectedFile ? (
+            <>
+              <div className='space-y-2 text-center'>
+                <Upload className='mx-auto size-10 text-gray-400' />
+                <p className='text-white'>
+                  Drag and drop files here, or click to select
+                </p>
+                <span className='text-sm text-gray-400'>
+                  For multiple files zip them (max size 200 MB)
+                </span>
+              </div>
+              <input
+                type='file'
+                onChange={handleFileInputChange}
+                className='absolute size-full cursor-pointer opacity-0'
+              />
+            </>
+          ) : (
+            <div className='flex gap-x-2'>
+              <File className='size-6' />
+              <span>{selectedFile.name}</span>
+            </div>
+          )}
+        </div>
+        <div className='mt-4 flex justify-end gap-4'>
+          {selectedFile && respData ? (
+            <Button onClick={handleAppStateReset} className='w-full sm:w-auto'>
+              Reset
+            </Button>
+          ) : selectedFile && !respData ? (
+            <Button
+              onClick={() => setSelectedFile(null)}
+              className='w-full sm:w-auto'
+            >
+              Clear
+            </Button>
+          ) : null}
+          {respData ? (
+            <Button
+              variant='secondary'
+              onClick={() => setShareDialogOpen(true)}
+              className='w-full sm:w-auto'
+            >
+              <Share className='mr-2 size-4' />
+              Share
+            </Button>
+          ) : (
+            <Button
+              variant='secondary'
+              disabled={selectedFile && !isLoading ? false : true}
+              onClick={handleFileUpload}
+              className='w-full sm:w-auto'
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className='mr-2 size-4 animate-spin' />
+                  Please wait
+                </>
+              ) : (
+                <>
+                  <Upload className='mr-2 size-4' />
+                  Upload File
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+      <AlertDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Share this file</AlertDialogTitle>
+            <AlertDialogDescription>
+              Copy the link below and share it with your friends and colleagues.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className='flex items-center space-x-2'>
+            <Input
+              type='text'
+              value={`${process.env.NEXT_PUBLIC_URL}/s/${respData?._id}`}
+              readOnly
+              className='flex-1'
+            />
+            <Button
+              variant='secondary'
+              size='icon'
+              onClick={handleCopyToClipboard}
+              className='shrink-0'
+            >
+              {copiedToClipboard ? (
+                <Check className='size-5' />
+              ) : (
+                <Copy className='size-5' />
+              )}
+              <span className='sr-only'>Copy link</span>
+            </Button>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

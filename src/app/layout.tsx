@@ -30,7 +30,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
         )}
       >
         <Header />
-        {children}
+        <main className='py-20'>{children}</main>
         {/* <Footer /> */}
         <Toaster />
       </body>
