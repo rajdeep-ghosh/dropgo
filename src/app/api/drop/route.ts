@@ -3,11 +3,10 @@ import { dbConnect } from '@/lib/db';
 import FileModel from '@/lib/models/file';
 import { getObject } from '@/lib/s3';
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
+export async function POST(req: NextRequest) {
+  const body = (await req.json()) as { id: string };
 
-  if (!id) {
+  if (!body.id) {
     return NextResponse.json(
       { error: 'Missing request body parameters' },
       { status: 400 }
@@ -17,9 +16,9 @@ export async function GET(req: NextRequest) {
   try {
     await dbConnect();
 
-    const file = await FileModel.findById(id);
+    const file = await FileModel.findById(body.id);
 
-    if (!file || new Date().getDate() - file.toJSON().updatedAt.getDate() > 5) {
+    if (!file || file.toJSON().expires.getTime() - Date.now() <= 0) {
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 

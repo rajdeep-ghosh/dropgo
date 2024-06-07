@@ -11,9 +11,11 @@ export type UploadAPIRespData = {
     size: number;
     type: string;
     key: string;
+    expires: Date;
     url: string;
-    createdAt: Date;
-    updatedAt: Date;
+    created_at: Date;
   };
   error: string;
 };
+
+export type DropAPIRespData = Pick<UploadAPIRespData, 'success'>;
