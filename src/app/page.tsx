@@ -78,7 +78,7 @@ export default function HomePage() {
 
   async function handleCopyToClipboard() {
     await navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_URL}/f/${respData?._id}`
+      `${process.env.NEXT_PUBLIC_URL}/s/${respData?._id}`
     );
     setCopiedToClipboard(true);
     setTimeout(() => setCopiedToClipboard(false), 2000);
