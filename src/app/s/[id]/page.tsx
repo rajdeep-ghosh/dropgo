@@ -61,7 +61,12 @@ export default async function DetailsPage({ params }: DetailsPageProps) {
             </div>
             <div className='flex justify-between'>
               <span className='font-medium'>Expires:</span>
-              <span>{new Date(data.expires).toLocaleString()}</span>
+              <time dateTime={new Date(data.expires).toISOString()}>
+                {new Date(data.expires).toLocaleString('en-IN', {
+                  timeZone: 'Asia/Kolkata',
+                  timeZoneName: 'short'
+                })}
+              </time>
             </div>
           </div>
         </CardContent>
