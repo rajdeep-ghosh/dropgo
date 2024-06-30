@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-async function dbConnect() {
+async function connectDB() {
   // check if db connection already exists
   if (mongoose.connection.readyState === mongoose.ConnectionStates.connected)
     return;
@@ -17,4 +17,4 @@ async function dbConnect() {
   }
 }
 
-export { dbConnect };
+export { connectDB };

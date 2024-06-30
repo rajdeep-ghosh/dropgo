@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { dbConnect } from '@/lib/db';
+import { connectDB } from '@/lib/db';
 import FileModel from '@/lib/models/file';
-import { getObject } from '@/lib/s3';
+import { getObject } from '@/lib/storage';
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as { id: string };
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await dbConnect();
+    await connectDB();
 
     const file = await FileModel.findById(body.id);
 

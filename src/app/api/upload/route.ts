@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { type NextRequest, NextResponse } from 'next/server';
 import FileModel from '@/lib/models/file';
-import { dbConnect } from '@/lib/db';
-import { putObject } from '@/lib/s3';
+import { connectDB } from '@/lib/db';
+import { putObject } from '@/lib/storage';
 import type { UploadAPIReqPayload } from '@/types';
 
 export async function POST(req: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    await dbConnect();
+    await connectDB();
 
     const uploadUrl = await putObject(key, body.type, body.size);
     const savedFile = await newFile.save();
