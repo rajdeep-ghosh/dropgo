@@ -8,6 +8,8 @@ import { getObject, putObject, ratelimit } from '@/lib/storage';
 import type { NextRequest } from 'next/server';
 import type { UploadAPIReqPayload } from '@/types';
 
+export const runtime = 'edge';
+
 async function POST(req: NextRequest) {
   const ip = req.ip ?? '127.0.0.1';
 
