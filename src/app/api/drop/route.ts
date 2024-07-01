@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+// import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 
 import FileModel from '@/lib/models/file';
@@ -48,7 +48,10 @@ async function POST(req: NextRequest) {
     );
   }
 
-  const key = `${crypto.randomBytes(8).toString('hex')}-${body.name.replace(/\s+/g, '_')}`;
+  // const key = `${crypto.randomBytes(8).toString('hex')}-${body.name.replace(/\s+/g, '_')}`;
+  const key = `${crypto.randomUUID()}-${body.name.replace(/\s+/g, '_')}`;
+  console.log(key);
+
   const newFile = new FileModel({
     name: body.name,
     size: body.size,
