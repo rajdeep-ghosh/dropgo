@@ -37,7 +37,7 @@ export default function HomePage() {
     try {
       setIsLoading(true);
 
-      const uploadResp = await fetch('/api/upload', {
+      const uploadResp = await fetch('/api/drop', {
         method: 'POST',
         body: JSON.stringify({
           name: selectedFile.name,

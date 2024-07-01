@@ -23,12 +23,9 @@ type DetailsPageProps = {
 };
 
 export default async function DetailsPage({ params }: DetailsPageProps) {
-  const resp = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/drop`, {
-    method: 'POST',
-    body: JSON.stringify({
-      id: params.id
-    })
-  });
+  const resp = await fetch(
+    `${process.env.NEXT_PUBLIC_URL}/api/drop?id=${params.id}`
+  );
   if (!resp.ok) return notFound();
 
   const { success: data } = (await resp.json()) as DropAPIRespData;
