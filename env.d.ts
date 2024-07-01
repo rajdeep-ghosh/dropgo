@@ -2,6 +2,8 @@
 namespace NodeJS {
   interface ProcessEnv {
     NEXT_PUBLIC_URL: string;
+    KV_REST_API_URL: string;
+    KV_REST_API_TOKEN: string;
     MONGODB_URI: string;
     AWS_REGION: string;
     AWS_ACCESS_KEY_ID: string;

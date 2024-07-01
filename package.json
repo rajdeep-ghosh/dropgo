@@ -21,6 +21,8 @@
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
+    "@upstash/ratelimit": "^1.2.1",
+    "@vercel/kv": "^2.0.0",
     "lucide-react": "^0.378.0",
     "mime-types": "^2.1.35",
     "mongoose": "^8.4.0",
