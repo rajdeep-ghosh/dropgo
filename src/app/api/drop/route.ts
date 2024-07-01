@@ -10,7 +10,7 @@ import type { UploadAPIReqPayload } from '@/types';
 
 async function POST(req: NextRequest) {
   const ip = req.ip ?? '127.0.0.1';
-  console.log(ip);
+  console.log('POST', ip);
   const { limit, remaining, reset } = await ratelimit.upload.limit(ip);
 
   const ratelimitHeaders = {
@@ -82,6 +82,7 @@ async function POST(req: NextRequest) {
 
 async function GET(req: NextRequest) {
   const ip = req.ip ?? '127.0.0.1';
+  console.log('GET', ip);
   const { limit, remaining, reset } = await ratelimit.download.limit(ip);
 
   const ratelimitHeaders = {
