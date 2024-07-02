@@ -55,7 +55,7 @@ async function POST(req: NextRequest) {
 }
 
 async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  const searchParams = req.nextUrl.searchParams;
   const id = searchParams.get('id');
 
   if (!id) {
