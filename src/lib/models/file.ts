@@ -1,6 +1,16 @@
-import mongoose from 'mongoose';
+import { Schema, models, model } from 'mongoose';
+import type { Document, Model } from 'mongoose';
 
-const fileSchema = new mongoose.Schema({
+interface IFile extends Document {
+  name: string;
+  size: number;
+  type: string;
+  key: string;
+  expires: Date;
+  created_at: Date;
+}
+
+const fileSchema = new Schema<IFile>({
   name: {
     type: String,
     required: true
@@ -27,4 +37,4 @@ const fileSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model('File', fileSchema);
+export default (models?.File as Model<IFile>) || model('File', fileSchema);
