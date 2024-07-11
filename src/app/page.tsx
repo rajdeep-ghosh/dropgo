@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Check, Copy, File, Loader2, Share, Upload } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -14,12 +15,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import type { UploadAPIRespData } from '@/types';
+
+import type { PostAPIRespData } from '@/types';
 
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [respData, setRespData] = useState<UploadAPIRespData['success']>();
+  const [respData, setRespData] = useState<PostAPIRespData['success']>();
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
@@ -45,7 +47,7 @@ export default function HomePage() {
           type: selectedFile.type
         })
       });
-      const data = (await uploadResp.json()) as UploadAPIRespData;
+      const data = (await uploadResp.json()) as PostAPIRespData;
       if (!uploadResp.ok) throw new Error(data.error);
 
       const s3Resp = await fetch(data.success.url, {
@@ -78,7 +80,7 @@ export default function HomePage() {
 
   async function handleCopyToClipboard() {
     await navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_URL}/s/${respData?._id}`
+      `${process.env.NEXT_PUBLIC_URL}/s/${respData?.id}`
     );
     setCopiedToClipboard(true);
     setTimeout(() => setCopiedToClipboard(false), 2000);
@@ -181,7 +183,7 @@ export default function HomePage() {
           <div className='flex items-center space-x-2'>
             <Input
               type='text'
-              value={`${process.env.NEXT_PUBLIC_URL}/s/${respData?._id}`}
+              value={`${process.env.NEXT_PUBLIC_URL}/s/${respData?.id}`}
               readOnly
               className='flex-1'
             />

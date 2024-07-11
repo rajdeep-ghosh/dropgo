@@ -1,21 +1,22 @@
-export type UploadAPIReqPayload = {
+export type PostAPIReqPayload = {
   name: string;
   size: number;
   type: string;
 };
 
-export type UploadAPIRespData = {
+export type PostAPIRespData = {
   success: {
-    _id: string;
+    id: string;
     name: string;
     size: number;
     type: string;
     key: string;
-    expires: Date;
+    expiresAt: Date;
     url: string;
-    created_at: Date;
+    createdAt: Date;
+    updatedAt: Date;
   };
   error: string;
 };
 
-export type DropAPIRespData = Pick<UploadAPIRespData, 'success'>;
+export type GetAPIRespData = Pick<PostAPIRespData, 'success'>;

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { extension as mimeExtention } from 'mime-types';
 import Link from 'next/link';
 import { Download } from 'lucide-react';
+
 import { formatBytes } from '@/lib/utils';
 import {
   Card,
@@ -12,7 +13,8 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { DropAPIRespData } from '@/types';
+
+import type { GetAPIRespData } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +30,7 @@ export default async function DetailsPage({ params }: DetailsPageProps) {
   );
   if (!resp.ok) return notFound();
 
-  const { success: data } = (await resp.json()) as DropAPIRespData;
+  const { success: data } = (await resp.json()) as GetAPIRespData;
 
   return (
     <div className='mx-auto grid max-w-lg gap-8 px-4 sm:px-6 lg:px-8'>
@@ -58,8 +60,8 @@ export default async function DetailsPage({ params }: DetailsPageProps) {
             </div>
             <div className='flex justify-between'>
               <span className='font-medium'>Expires:</span>
-              <time dateTime={new Date(data.expires).toISOString()}>
-                {new Date(data.expires).toLocaleString('en-IN', {
+              <time dateTime={new Date(data.expiresAt).toISOString()}>
+                {new Date(data.expiresAt).toLocaleString('en-IN', {
                   timeZone: 'Asia/Kolkata',
                   timeZoneName: 'short'
                 })}
