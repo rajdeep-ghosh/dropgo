@@ -5,7 +5,7 @@ import { extension as mimeExtention } from 'mime-types';
 import Link from 'next/link';
 import { AlertCircle, Download } from 'lucide-react';
 
-import { formatBytes } from '@/lib/utils';
+import { formatBytes, getTimeDifference } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Card,
@@ -92,13 +92,16 @@ export default function DetailsPage({ params }: DetailsPageProps) {
                 <span>{formatBytes(data.size)}</span>
               </div>
               <div className='flex justify-between'>
-                <span className='font-medium'>Expires:</span>
-                {/* TODO: Fix timezone issue */}
-                <time dateTime={new Date(data.expiresAt).toISOString()}>
-                  {new Date(data.expiresAt).toLocaleString('en-IN', {
-                    timeZone: 'Asia/Kolkata',
-                    timeZoneName: 'short'
-                  })}
+                <span className='font-medium'>Expires In:</span>
+                <time dateTime={data.expiresAt.toString()}>
+                  {getTimeDifference(data.expiresAt)}{' '}
+                  <span className='hidden sm:inline'>
+                    (
+                    {new Date(data.expiresAt).toLocaleString(
+                      navigator.language
+                    )}
+                    )
+                  </span>
                 </time>
               </div>
             </div>
