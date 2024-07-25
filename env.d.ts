@@ -5,6 +5,8 @@ namespace NodeJS {
     CRON_SECRET: string;
     DB_URL: string;
     DB_POOL_URL: string;
+    KV_URL: string;
+    KV_TOKEN: string;
     AWS_REGION: string;
     AWS_ACCESS_KEY_ID: string;
     AWS_SECRET_ACCESS_KEY: string;

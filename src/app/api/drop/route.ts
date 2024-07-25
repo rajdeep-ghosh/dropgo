@@ -6,7 +6,7 @@ import { createFileReqSchema, getFileReqSchema } from '@/lib/api/schema/drop';
 import { generateFileKey } from '@/lib/utils';
 import db from '@/lib/db';
 import { filesTable } from '@/lib/db/schema';
-import { getObject, putObject } from '@/lib/storage';
+import { getObject, putObject, ratelimit } from '@/lib/storage';
 
 import type { NextRequest } from 'next/server';
 
@@ -27,6 +27,21 @@ async function POST(req: NextRequest) {
     return NextResponse.json(
       { status: 'error', message: errMsg },
       { status: 400 }
+    );
+  }
+
+  const ip = req.ip ?? '127.0.0.1';
+  const { limit, remaining, reset } = await ratelimit.upload.limit(ip);
+  const ratelimitHeaders = {
+    'RateLimit-Limit': limit.toString(),
+    'RateLimit-Remaining': remaining.toString(),
+    'RateLimit-Reset': reset.toString()
+  };
+
+  if (remaining === 0) {
+    return NextResponse.json(
+      { status: 'error', message: 'Rate limit exceeded' },
+      { status: 429, headers: ratelimitHeaders }
     );
   }
 
@@ -55,18 +70,18 @@ async function POST(req: NextRequest) {
         status: 'success',
         data: { ...newFile, url: uploadUrl }
       },
-      { status: 201 }
+      { status: 201, headers: ratelimitHeaders }
     );
   } catch (err) {
     if (err instanceof Error) {
       return NextResponse.json(
         { status: 'error', message: err.message },
-        { status: 500 }
+        { status: 500, headers: ratelimitHeaders }
       );
     }
     return NextResponse.json(
       { status: 'error', message: 'Please try again' },
-      { status: 500 }
+      { status: 500, headers: ratelimitHeaders }
     );
   }
 }
@@ -91,6 +106,21 @@ async function GET(req: NextRequest) {
     );
   }
 
+  const ip = req.ip ?? '127.0.0.1';
+  const { limit, remaining, reset } = await ratelimit.download.limit(ip);
+  const ratelimitHeaders = {
+    'RateLimit-Limit': limit.toString(),
+    'RateLimit-Remaining': remaining.toString(),
+    'RateLimit-Reset': reset.toString()
+  };
+
+  if (remaining === 0) {
+    return NextResponse.json(
+      { status: 'error', message: 'Rate limit exceeded' },
+      { status: 429, headers: ratelimitHeaders }
+    );
+  }
+
   try {
     const file = await db.query.filesTable.findFirst({
       where: eq(filesTable.id, id.data),
@@ -103,26 +133,29 @@ async function GET(req: NextRequest) {
     if (!file || file.expiresAt.getTime() - Date.now() <= 0) {
       return NextResponse.json(
         { status: 'error', message: 'File not found' },
-        { status: 404 }
+        { status: 404, headers: ratelimitHeaders }
       );
     }
 
     const downloadUrl = await getObject(file.key);
 
-    return NextResponse.json({
-      status: 'success',
-      data: { ...file, url: downloadUrl }
-    });
+    return NextResponse.json(
+      {
+        status: 'success',
+        data: { ...file, url: downloadUrl }
+      },
+      { headers: ratelimitHeaders }
+    );
   } catch (err) {
     if (err instanceof Error) {
       return NextResponse.json(
         { status: 'error', message: err.message },
-        { status: 500 }
+        { status: 500, headers: ratelimitHeaders }
       );
     }
     return NextResponse.json(
       { status: 'error', message: 'Please try again' },
-      { status: 500 }
+      { status: 500, headers: ratelimitHeaders }
     );
   }
 }

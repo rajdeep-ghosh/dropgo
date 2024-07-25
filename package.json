@@ -25,6 +25,8 @@
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
+    "@upstash/ratelimit": "^2.0.1",
+    "@upstash/redis": "^1.33.0",
     "drizzle-orm": "^0.31.4",
     "lucide-react": "^0.378.0",
     "mime-types": "^2.1.35",

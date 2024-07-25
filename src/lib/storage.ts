@@ -4,13 +4,20 @@ import {
   S3Client
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit';
 
-const client = new S3Client({
+const s3 = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
+});
+
+const kv = new Redis({
+  url: process.env.KV_URL,
+  token: process.env.KV_TOKEN
 });
 
 async function putObject(
@@ -29,7 +36,7 @@ async function putObject(
     }
   });
 
-  return await getSignedUrl(client, command, { expiresIn: 90 });
+  return await getSignedUrl(s3, command, { expiresIn: 90 });
 }
 
 async function getObject(key: string) {
@@ -38,7 +45,22 @@ async function getObject(key: string) {
     Key: key
   });
 
-  return await getSignedUrl(client, command, { expiresIn: 900 });
+  return await getSignedUrl(s3, command, { expiresIn: 900 });
 }
 
-export { putObject, getObject };
+const ratelimit = {
+  upload: new Ratelimit({
+    redis: kv,
+    prefix: 'dropgo-ratelimit:upload',
+    analytics: true,
+    limiter: Ratelimit.slidingWindow(12, '1d') // 12 requests per day
+  }),
+  download: new Ratelimit({
+    redis: kv,
+    prefix: 'dropgo-ratelimit:download',
+    analytics: true,
+    limiter: Ratelimit.slidingWindow(30, '1m') // 30 requests per minute
+  })
+};
+
+export { putObject, getObject, ratelimit };
