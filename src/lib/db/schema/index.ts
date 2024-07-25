@@ -1,1 +1,1 @@
-export { default as files } from './file';
+export { default as filesTable } from './file';

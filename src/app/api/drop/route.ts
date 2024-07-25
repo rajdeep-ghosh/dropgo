@@ -1,84 +1,122 @@
 import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
+import { generateErrorMessage } from 'zod-error';
 
+import { createFileReqSchema, getFileReqSchema } from '@/lib/api/schema/drop';
 import db from '@/lib/db';
-import { files } from '@/lib/db/schema';
+import { filesTable } from '@/lib/db/schema';
 import { getObject, putObject } from '@/lib/storage';
 
 import type { NextRequest } from 'next/server';
-import type { PostAPIReqPayload } from '@/types';
 
 async function POST(req: NextRequest) {
-  const body = (await req.json()) as PostAPIReqPayload;
+  const body = createFileReqSchema.safeParse(await req.json());
 
-  if (!body.name || !body.size || !body.type) {
+  if (!body.success) {
+    const errMsg = generateErrorMessage(body.error.issues, {
+      maxErrors: 1,
+      delimiter: { component: ': ' },
+      code: { enabled: false },
+      path: { enabled: true, type: 'objectNotation', label: '' },
+      message: { enabled: true, label: '' }
+    });
+
     return NextResponse.json(
-      { error: 'File type not suppoted / Missing required parameters' },
+      { status: 'error', message: errMsg },
       { status: 400 }
     );
   }
 
-  const maxFileSize = 201 * 1024 * 1024; // 201 MB
-  if (body.size > maxFileSize) {
-    return NextResponse.json({ error: 'File too large' }, { status: 413 });
-  }
-
   try {
-    const key = `${crypto.randomBytes(8).toString('hex')}-${body.name.replace(/\s+/g, '_')}`;
+    const key = `${crypto.randomBytes(8).toString('hex')}-${body.data.name.replace(/\s+/g, '_')}`;
 
     const [newFile] = await db
-      .insert(files)
+      .insert(filesTable)
       .values({
-        name: body.name,
-        size: body.size,
-        type: body.type,
+        name: body.data.name,
+        size: body.data.size,
+        type: body.data.type,
         key
       })
-      .returning({ id: files.id });
+      .returning({ id: filesTable.id });
 
-    const uploadUrl = await putObject(key, body.type, body.size);
+    const uploadUrl = await putObject(key, body.data.type, body.data.size);
 
     return NextResponse.json(
-      { success: { ...newFile, url: uploadUrl } },
+      {
+        status: 'success',
+        data: { ...newFile, url: uploadUrl }
+      },
       { status: 201 }
     );
   } catch (err) {
     if (err instanceof Error) {
-      return NextResponse.json({ error: err.message }, { status: 500 });
+      return NextResponse.json(
+        { status: 'error', message: err.message },
+        { status: 500 }
+      );
     }
-    return NextResponse.json({ error: 'Please try again' }, { status: 500 });
+    return NextResponse.json(
+      { status: 'error', message: 'Please try again' },
+      { status: 500 }
+    );
   }
 }
 
 async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  const id = searchParams.get('id');
 
-  if (!id) {
+  const id = getFileReqSchema.safeParse(searchParams.get('id'));
+
+  if (!id.success) {
+    const errMsg = generateErrorMessage(id.error.issues, {
+      maxErrors: 1,
+      delimiter: { component: ': ' },
+      code: { enabled: false },
+      path: { enabled: false },
+      message: { enabled: true, label: '' }
+    });
+
     return NextResponse.json(
-      { error: 'Missing required parameters' },
+      { status: 'error', message: errMsg },
       { status: 400 }
     );
   }
 
   try {
-    const file = await db.query.files.findFirst({
-      where: eq(files.id, id)
+    const file = await db.query.filesTable.findFirst({
+      where: eq(filesTable.id, id.data),
+      columns: {
+        createdAt: false,
+        updatedAt: false
+      }
     });
 
     if (!file || file.expiresAt.getTime() - Date.now() <= 0) {
-      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+      return NextResponse.json(
+        { status: 'error', message: 'File not found' },
+        { status: 404 }
+      );
     }
 
     const downloadUrl = await getObject(file.key);
 
-    return NextResponse.json({ success: { ...file, url: downloadUrl } });
+    return NextResponse.json({
+      status: 'success',
+      data: { ...file, url: downloadUrl }
+    });
   } catch (err) {
     if (err instanceof Error) {
-      return NextResponse.json({ error: err.message }, { status: 500 });
+      return NextResponse.json(
+        { status: 'error', message: err.message },
+        { status: 500 }
+      );
     }
-    return NextResponse.json({ error: 'Please try again' }, { status: 500 });
+    return NextResponse.json(
+      { status: 'error', message: 'Please try again' },
+      { status: 500 }
+    );
   }
 }
 

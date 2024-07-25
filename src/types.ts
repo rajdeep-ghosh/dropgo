@@ -1,22 +1,26 @@
-export type PostAPIReqPayload = {
-  name: string;
-  size: number;
-  type: string;
-};
+type FileMeta =
+  | {
+      status: 'success';
+      data: {
+        id: string;
+        url: string;
+      };
+    }
+  | { status: 'error'; message: string };
 
-export type PostAPIRespData = {
-  success: {
-    id: string;
-    name: string;
-    size: number;
-    type: string;
-    key: string;
-    expiresAt: Date;
-    url: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-  error: string;
-};
+type FileData =
+  | {
+      status: 'success';
+      data: {
+        id: string;
+        name: string;
+        size: number;
+        type: string;
+        key: string;
+        expiresAt: Date;
+        url: string;
+      };
+    }
+  | { status: 'error'; message: string };
 
-export type GetAPIRespData = Pick<PostAPIRespData, 'success'>;
+export type { FileMeta, FileData };

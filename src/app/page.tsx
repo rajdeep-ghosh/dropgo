@@ -16,12 +16,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 
-import type { PostAPIRespData } from '@/types';
+import type { FileMeta } from '@/types';
 
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [respData, setRespData] = useState<PostAPIRespData['success']>();
+  const [fileData, setFileData] =
+    useState<Extract<FileMeta, { status: 'success' }>['data']>();
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
@@ -39,7 +40,7 @@ export default function HomePage() {
     try {
       setIsLoading(true);
 
-      const uploadResp = await fetch('/api/drop', {
+      const createFileMetaRes = await fetch('/api/drop', {
         method: 'POST',
         body: JSON.stringify({
           name: selectedFile.name,
@@ -47,23 +48,31 @@ export default function HomePage() {
           type: selectedFile.type
         })
       });
-      const data = (await uploadResp.json()) as PostAPIRespData;
-      if (!uploadResp.ok) throw new Error(data.error);
 
-      const s3Resp = await fetch(data.success.url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': selectedFile.type
-        },
-        body: selectedFile
-      });
-      if (!s3Resp.ok) throw new Error('upload failed');
+      const body = (await createFileMetaRes.json()) as FileMeta;
 
-      setRespData(data.success);
-      toast({
-        title: 'Success 🥳',
-        description: 'File uploaded successfully'
-      });
+      switch (body.status) {
+        case 'error':
+          throw new Error(body.message);
+
+        case 'success': {
+          const fileUploadToS3Res = await fetch(body.data.url, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': selectedFile.type
+            },
+            body: selectedFile
+          });
+
+          if (!fileUploadToS3Res.ok) throw new Error('Upload failed');
+
+          setFileData(body.data);
+          toast({
+            title: 'Success 🥳',
+            description: 'File uploaded successfully'
+          });
+        }
+      }
     } catch (err) {
       if (err instanceof Error) {
         toast({
@@ -80,7 +89,7 @@ export default function HomePage() {
 
   async function handleCopyToClipboard() {
     await navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_URL}/s/${respData?.id}`
+      `${process.env.NEXT_PUBLIC_URL}/s/${fileData?.id}`
     );
     setCopiedToClipboard(true);
     setTimeout(() => setCopiedToClipboard(false), 2000);
@@ -88,7 +97,7 @@ export default function HomePage() {
 
   function handleAppStateReset() {
     setSelectedFile(null);
-    setRespData(undefined);
+    setFileData(undefined);
   }
 
   return (
@@ -129,11 +138,11 @@ export default function HomePage() {
           )}
         </div>
         <div className='mt-4 flex justify-end gap-4'>
-          {selectedFile && respData ? (
+          {selectedFile && fileData ? (
             <Button onClick={handleAppStateReset} className='w-full sm:w-auto'>
               Reset
             </Button>
-          ) : selectedFile && !respData ? (
+          ) : selectedFile && !fileData ? (
             <Button
               onClick={() => setSelectedFile(null)}
               className='w-full sm:w-auto'
@@ -141,7 +150,7 @@ export default function HomePage() {
               Clear
             </Button>
           ) : null}
-          {respData ? (
+          {fileData ? (
             <Button
               variant='secondary'
               onClick={() => setShareDialogOpen(true)}
@@ -183,7 +192,7 @@ export default function HomePage() {
           <div className='flex items-center space-x-2'>
             <Input
               type='text'
-              value={`${process.env.NEXT_PUBLIC_URL}/s/${respData?.id}`}
+              value={`${process.env.NEXT_PUBLIC_URL}/s/${fileData?.id}`}
               readOnly
               className='flex-1'
             />
