@@ -41,7 +41,12 @@ async function POST(req: NextRequest) {
       })
       .returning({ id: filesTable.id });
 
-    const uploadUrl = await putObject(key, body.data.type, body.data.size);
+    const uploadUrl = await putObject(
+      key,
+      body.data.type,
+      body.data.size,
+      newFile.id
+    );
 
     return NextResponse.json(
       {

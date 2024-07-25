@@ -16,13 +16,17 @@ const client = new S3Client({
 async function putObject(
   key: string,
   contentType: string,
-  contentLength: number
+  contentLength: number,
+  fileId: string
 ) {
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: key,
     ContentType: contentType,
-    ContentLength: contentLength
+    ContentLength: contentLength,
+    Metadata: {
+      fileId
+    }
   });
 
   return await getSignedUrl(client, command, { expiresIn: 90 });
