@@ -38,7 +38,7 @@ async function getObject(key: string) {
     Key: key
   });
 
-  return getSignedUrl(client, command, { expiresIn: 900 });
+  return await getSignedUrl(client, command, { expiresIn: 900 });
 }
 
 export { putObject, getObject };
