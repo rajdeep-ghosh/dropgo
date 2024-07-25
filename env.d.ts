@@ -2,6 +2,7 @@
 namespace NodeJS {
   interface ProcessEnv {
     NEXT_PUBLIC_URL: string;
+    CRON_SECRET: string;
     DB_URL: string;
     DB_POOL_URL: string;
     AWS_REGION: string;
