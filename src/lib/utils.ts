@@ -28,4 +28,14 @@ function getTimeDifference(futureTimeStr: Date) {
   }
 }
 
-export { cn, formatBytes, getTimeDifference };
+function generateFileKey(filename: string, length = 8) {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  const randomStr = Array.from(array, (byte) =>
+    byte.toString(16).padStart(2, '0')
+  ).join('');
+
+  return `${randomStr}-${filename.replace(/\s+/g, '_')}`;
+}
+
+export { cn, formatBytes, getTimeDifference, generateFileKey };

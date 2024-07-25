@@ -1,9 +1,9 @@
-import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { generateErrorMessage } from 'zod-error';
 
 import { createFileReqSchema, getFileReqSchema } from '@/lib/api/schema/drop';
+import { generateFileKey } from '@/lib/utils';
 import db from '@/lib/db';
 import { filesTable } from '@/lib/db/schema';
 import { getObject, putObject } from '@/lib/storage';
@@ -29,7 +29,7 @@ async function POST(req: NextRequest) {
   }
 
   try {
-    const key = `${crypto.randomBytes(8).toString('hex')}-${body.data.name.replace(/\s+/g, '_')}`;
+    const key = generateFileKey(body.data.name);
 
     const [newFile] = await db
       .insert(filesTable)
