@@ -1,18 +1,12 @@
-import { Client } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { migrate } from 'drizzle-orm/neon-http/migrator';
 
-const migrationClient = new Client({
-  connectionString: process.env.DB_URL
-});
+const migrationClient = neon(process.env.DB_URL);
 
 async function main() {
-  await migrationClient.connect();
-
   const db = drizzle(migrationClient);
   await migrate(db, { migrationsFolder: 'src/lib/db/migrations' });
-
-  await migrationClient.end();
 }
 
 main().catch((err) => {

@@ -14,6 +14,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.588.0
         version: 3.588.0
+      '@neondatabase/serverless':
+        specifier: ^0.9.4
+        version: 0.9.4
       '@radix-ui/react-alert-dialog':
         specifier: ^1.0.5
         version: 1.0.5(@types/react-dom@18.2.22)(@types/react@18.2.66)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -25,7 +28,7 @@ importers:
         version: 1.1.5(@types/react-dom@18.2.22)(@types/react@18.2.66)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       drizzle-orm:
         specifier: ^0.31.4
-        version: 0.31.4(@types/pg@8.11.6)(@types/react@18.2.66)(pg@8.12.0)(react@18.2.0)
+        version: 0.31.4(@neondatabase/serverless@0.9.4)(@types/pg@8.11.6)(@types/react@18.2.66)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)
       lucide-react:
         specifier: ^0.378.0
         version: 0.378.0(react@18.2.0)
@@ -35,9 +38,6 @@ importers:
       next:
         specifier: ^14.1.2
         version: 14.1.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      pg:
-        specifier: ^8.12.0
-        version: 8.12.0
       react:
         specifier: ^18
         version: 18.2.0
@@ -57,9 +57,6 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.11.28
-      '@types/pg':
-        specifier: ^8.11.6
-        version: 8.11.6
       '@types/react':
         specifier: ^18
         version: 18.2.66
@@ -792,6 +789,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@neondatabase/serverless@0.9.4':
+    resolution: {integrity: sha512-D0AXgJh6xkf+XTlsO7iwE2Q1w8981E1cLCPAALMU2YKtkF/1SF6BiAzYARZFYo175ON+b1RNIy9TdSFHm5nteg==}
 
   '@next/env@14.1.3':
     resolution: {integrity: sha512-VhgXTvrgeBRxNPjyfBsDIMvgsKDxjlpw4IAUsHCX8Gjl1vtHUYRT3+xfQ/wwvLPDd/6kqfLqk9Pt4+7gysuCKQ==}
@@ -2713,6 +2713,10 @@ packages:
   postgres-range@1.1.4:
     resolution: {integrity: sha512-i/hbxIE9803Alj/6ytL7UHQxRvZkI9O4Sy+J3HGc4F4oo/2eQAjTSNJ0bfxyse3bH0nuVesCk+3IRLaMtG3H6w==}
 
+  postgres@3.4.4:
+    resolution: {integrity: sha512-IbyN+9KslkqcXa8AO9fxpk97PA4pzewvpi2B3Dwy9u4zpV32QicaEdgmF3eSQUzdRk7ttDHQejNgAEr4XoeH4A==}
+    engines: {node: '>=12'}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -4023,6 +4027,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
+  '@neondatabase/serverless@0.9.4':
+    dependencies:
+      '@types/pg': 8.11.6
+
   '@next/env@14.1.3': {}
 
   '@next/eslint-plugin-next@14.1.3':
@@ -5054,11 +5062,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.31.4(@types/pg@8.11.6)(@types/react@18.2.66)(pg@8.12.0)(react@18.2.0):
+  drizzle-orm@0.31.4(@neondatabase/serverless@0.9.4)(@types/pg@8.11.6)(@types/react@18.2.66)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0):
     optionalDependencies:
+      '@neondatabase/serverless': 0.9.4
       '@types/pg': 8.11.6
       '@types/react': 18.2.66
       pg: 8.12.0
+      postgres: 3.4.4
       react: 18.2.0
 
   eastasianwidth@0.2.0: {}
@@ -6142,7 +6152,8 @@ snapshots:
   pg-cloudflare@1.1.1:
     optional: true
 
-  pg-connection-string@2.6.4: {}
+  pg-connection-string@2.6.4:
+    optional: true
 
   pg-int8@1.0.1: {}
 
@@ -6151,6 +6162,7 @@ snapshots:
   pg-pool@3.6.2(pg@8.12.0):
     dependencies:
       pg: 8.12.0
+    optional: true
 
   pg-protocol@1.6.1: {}
 
@@ -6161,6 +6173,7 @@ snapshots:
       postgres-bytea: 1.0.0
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
+    optional: true
 
   pg-types@4.0.2:
     dependencies:
@@ -6181,10 +6194,12 @@ snapshots:
       pgpass: 1.0.5
     optionalDependencies:
       pg-cloudflare: 1.1.1
+    optional: true
 
   pgpass@1.0.5:
     dependencies:
       split2: 4.2.0
+    optional: true
 
   picocolors@1.0.0: {}
 
@@ -6241,27 +6256,34 @@ snapshots:
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
-  postgres-array@2.0.0: {}
+  postgres-array@2.0.0:
+    optional: true
 
   postgres-array@3.0.2: {}
 
-  postgres-bytea@1.0.0: {}
+  postgres-bytea@1.0.0:
+    optional: true
 
   postgres-bytea@3.0.0:
     dependencies:
       obuf: 1.1.2
 
-  postgres-date@1.0.7: {}
+  postgres-date@1.0.7:
+    optional: true
 
   postgres-date@2.1.0: {}
 
   postgres-interval@1.2.0:
     dependencies:
       xtend: 4.0.2
+    optional: true
 
   postgres-interval@3.0.0: {}
 
   postgres-range@1.1.4: {}
+
+  postgres@3.4.4:
+    optional: true
 
   prelude-ls@1.2.1: {}
 
@@ -6453,7 +6475,8 @@ snapshots:
 
   source-map@0.6.1: {}
 
-  split2@4.2.0: {}
+  split2@4.2.0:
+    optional: true
 
   streamsearch@1.1.0: {}
 
@@ -6750,7 +6773,8 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  xtend@4.0.2: {}
+  xtend@4.0.2:
+    optional: true
 
   yallist@4.0.0: {}
 

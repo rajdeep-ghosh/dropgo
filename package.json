@@ -21,6 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.588.0",
     "@aws-sdk/s3-request-presigner": "^3.588.0",
+    "@neondatabase/serverless": "^0.9.4",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
@@ -28,7 +29,6 @@
     "lucide-react": "^0.378.0",
     "mime-types": "^2.1.35",
     "next": "^14.1.2",
-    "pg": "^8.12.0",
     "react": "^18",
     "react-dom": "^18",
     "zod": "^3.23.8",
@@ -37,7 +37,6 @@
   "devDependencies": {
     "@types/mime-types": "^2.1.4",
     "@types/node": "^20",
-    "@types/pg": "^8.11.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^6.2.1",

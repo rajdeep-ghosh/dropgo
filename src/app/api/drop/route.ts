@@ -10,6 +10,8 @@ import { getObject, putObject } from '@/lib/storage';
 
 import type { NextRequest } from 'next/server';
 
+export const runtime = 'edge';
+
 async function POST(req: NextRequest) {
   const body = createFileReqSchema.safeParse(await req.json());
 

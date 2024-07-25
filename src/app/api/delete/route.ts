@@ -6,6 +6,8 @@ import { filesTable } from '@/lib/db/schema';
 
 import type { NextRequest } from 'next/server';
 
+export const runtime = 'edge';
+
 async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
