@@ -108,7 +108,7 @@ export default function DetailsPage({ params }: DetailsPageProps) {
           </CardContent>
           <CardFooter>
             <Button className='w-full' asChild>
-              <Link href={data.url} target='_blank' download>
+              <Link href={data.url} target='_blank' download={data.key}>
                 <Download className='mr-2 size-4' />
                 Download File
               </Link>
