@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Check, Copy, File, Loader2, Share, Upload } from 'lucide-react';
 
+import { formatBytes } from '@/lib/utils';
+import { maxFileSize } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -121,7 +123,8 @@ export default function HomePage() {
                   Drag and drop files here, or click to select
                 </p>
                 <span className='text-sm text-gray-400'>
-                  For multiple files zip them (max size 200 MB)
+                  For multiple files zip them (max size{' '}
+                  {formatBytes(maxFileSize)})
                 </span>
               </div>
               <input
