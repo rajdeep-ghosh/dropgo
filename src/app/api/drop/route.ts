@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import { eq, lt, sql } from 'drizzle-orm';
 import { generateErrorMessage } from 'zod-error';
 
 import { createFileReqSchema, getFileReqSchema } from '@/lib/api/schema/drop';
@@ -160,4 +160,22 @@ async function GET(req: NextRequest) {
   }
 }
 
-export { POST, GET };
+async function DELETE(req: NextRequest) {
+  const authHeader = req.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json('Unauthorized', { status: 401 });
+  }
+
+  try {
+    await db.delete(filesTable).where(lt(filesTable.expiresAt, sql`now()`));
+
+    return NextResponse.json('OK');
+  } catch (err) {
+    if (err instanceof Error) {
+      return NextResponse.json(err.message, { status: 500 });
+    }
+    return NextResponse.json('Something went wrong', { status: 500 });
+  }
+}
+
+export { POST, GET, DELETE };
