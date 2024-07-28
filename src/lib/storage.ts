@@ -49,12 +49,20 @@ async function getObject(key: string) {
 }
 
 const ratelimit = {
-  upload: new Ratelimit({
-    redis: kv,
-    prefix: 'dropgo-ratelimit:upload',
-    analytics: true,
-    limiter: Ratelimit.slidingWindow(12, '1d') // 12 requests per day
-  }),
+  upload: {
+    create: new Ratelimit({
+      redis: kv,
+      prefix: 'dropgo-ratelimit:upload:create',
+      analytics: true,
+      limiter: Ratelimit.slidingWindow(12, '1d') // 12 requests per day
+    }),
+    update: new Ratelimit({
+      redis: kv,
+      prefix: 'dropgo-ratelimit:upload:update',
+      analytics: true,
+      limiter: Ratelimit.slidingWindow(12, '1d') // 12 requests per day
+    })
+  },
   download: new Ratelimit({
     redis: kv,
     prefix: 'dropgo-ratelimit:download',

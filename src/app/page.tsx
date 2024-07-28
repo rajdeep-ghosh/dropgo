@@ -66,7 +66,17 @@ export default function HomePage() {
             body: selectedFile
           });
 
-          if (!fileUploadToS3Res.ok) throw new Error('Upload failed');
+          const updateFileMetaRes = await fetch('/api/drop', {
+            method: 'PATCH',
+            body: JSON.stringify({
+              id: body.data.id,
+              success: createFileMetaRes.ok && fileUploadToS3Res.ok
+            })
+          });
+
+          if (!fileUploadToS3Res.ok || !updateFileMetaRes.ok) {
+            throw new Error('Upload failed');
+          }
 
           setFileData(body.data);
           toast({

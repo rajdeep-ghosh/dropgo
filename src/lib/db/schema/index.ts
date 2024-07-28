@@ -1,1 +1,1 @@
-export { default as filesTable } from './file';
+export { default as filesTable, uploadStatusEnum } from './file';

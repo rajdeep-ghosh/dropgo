@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
-import { eq, lt, sql } from 'drizzle-orm';
+import { eq, lt, or, sql } from 'drizzle-orm';
 import { generateErrorMessage } from 'zod-error';
 
-import { createFileReqSchema, getFileReqSchema } from '@/lib/api/schema/drop';
+import {
+  createFileReqSchema,
+  getFileReqSchema,
+  updateFileReqSchema
+} from '@/lib/api/schema/drop';
 import { generateFileKey } from '@/lib/utils';
 import db from '@/lib/db';
 import { filesTable } from '@/lib/db/schema';
@@ -31,7 +35,7 @@ async function POST(req: NextRequest) {
   }
 
   const ip = req.ip ?? '127.0.0.1';
-  const { limit, remaining, reset } = await ratelimit.upload.limit(ip);
+  const { limit, remaining, reset } = await ratelimit.upload.create.limit(ip);
   const ratelimitHeaders = {
     'RateLimit-Limit': limit.toString(),
     'RateLimit-Remaining': remaining.toString(),
@@ -81,6 +85,67 @@ async function POST(req: NextRequest) {
     }
     return NextResponse.json(
       { status: 'error', message: 'Please try again' },
+      { status: 500, headers: ratelimitHeaders }
+    );
+  }
+}
+
+async function PATCH(req: NextRequest) {
+  const body = updateFileReqSchema.safeParse(await req.json());
+
+  if (!body.success) {
+    const errMsg = generateErrorMessage(body.error.issues, {
+      maxErrors: 1,
+      delimiter: { component: ': ' },
+      code: { enabled: false },
+      path: { enabled: true, type: 'objectNotation', label: '' },
+      message: { enabled: true, label: '' }
+    });
+
+    return NextResponse.json(
+      { status: 'error', message: errMsg },
+      { status: 400 }
+    );
+  }
+
+  const ip = req.ip ?? '127.0.0.1';
+  const { limit, remaining, reset } = await ratelimit.upload.update.limit(ip);
+  const ratelimitHeaders = {
+    'RateLimit-Limit': limit.toString(),
+    'RateLimit-Remaining': remaining.toString(),
+    'RateLimit-Reset': reset.toString()
+  };
+
+  if (remaining === 0) {
+    return NextResponse.json(
+      { status: 'error', message: 'Rate limit exceeded' },
+      { status: 429, headers: ratelimitHeaders }
+    );
+  }
+
+  try {
+    if (body.data.success) {
+      await db
+        .update(filesTable)
+        .set({ uploadStatus: 'UPLOADED', updatedAt: sql`now()` })
+        .where(eq(filesTable.id, body.data.id));
+
+      return NextResponse.json('OK', { headers: ratelimitHeaders });
+    } else {
+      return NextResponse.json('Not OK', {
+        status: 422,
+        headers: ratelimitHeaders
+      });
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      return NextResponse.json(
+        { status: 'error', message: err.message },
+        { status: 500, headers: ratelimitHeaders }
+      );
+    }
+    return NextResponse.json(
+      { status: 'error', message: 'Something went wrong' },
       { status: 500, headers: ratelimitHeaders }
     );
   }
@@ -167,7 +232,14 @@ async function DELETE(req: NextRequest) {
   }
 
   try {
-    await db.delete(filesTable).where(lt(filesTable.expiresAt, sql`now()`));
+    await db
+      .delete(filesTable)
+      .where(
+        or(
+          lt(filesTable.expiresAt, sql`now()`),
+          eq(filesTable.uploadStatus, 'UPLOADING')
+        )
+      );
 
     return NextResponse.json('OK');
   } catch (err) {
@@ -178,4 +250,4 @@ async function DELETE(req: NextRequest) {
   }
 }
 
-export { POST, GET, DELETE };
+export { POST, PATCH, GET, DELETE };

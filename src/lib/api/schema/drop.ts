@@ -16,6 +16,11 @@ const createFileReqSchema = z.object({
   type: z.string().min(1, 'Not supported')
 });
 
+const updateFileReqSchema = z.object({
+  id: z.string().uuid('Invalid id'),
+  success: z.boolean()
+});
+
 const getFileReqSchema = z.string().uuid('Invalid id');
 
-export { createFileReqSchema, getFileReqSchema };
+export { createFileReqSchema, updateFileReqSchema, getFileReqSchema };
