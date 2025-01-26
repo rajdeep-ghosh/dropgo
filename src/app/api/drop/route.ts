@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { eq, lt, or, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { generateErrorMessage } from 'zod-error';
 
 import {
@@ -7,10 +7,10 @@ import {
   getFileReqSchema,
   updateFileReqSchema
 } from '@/lib/api/schema/drop';
-import { generateFileKey } from '@/lib/utils';
 import db from '@/lib/db';
 import { filesTable } from '@/lib/db/schema';
 import { getObject, putObject, ratelimit } from '@/lib/storage';
+import { generateFileKey } from '@/lib/utils';
 
 import type { NextRequest } from 'next/server';
 
@@ -225,29 +225,4 @@ async function GET(req: NextRequest) {
   }
 }
 
-async function DELETE(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json('Unauthorized', { status: 401 });
-  }
-
-  try {
-    await db
-      .delete(filesTable)
-      .where(
-        or(
-          lt(filesTable.expiresAt, sql`now()`),
-          eq(filesTable.uploadStatus, 'UPLOADING')
-        )
-      );
-
-    return NextResponse.json('OK');
-  } catch (err) {
-    if (err instanceof Error) {
-      return NextResponse.json(err.message, { status: 500 });
-    }
-    return NextResponse.json('Something went wrong', { status: 500 });
-  }
-}
-
-export { POST, PATCH, GET, DELETE };
+export { GET, PATCH, POST };
