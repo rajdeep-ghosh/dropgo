@@ -11,7 +11,7 @@
     "db:migrate": "tsx --env-file=.env src/lib/db/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "lint": "next lint",
-    "format:check": "prettier --check ./src",
+    "format": "prettier --check ./src",
     "format:fix": "prettier --write ./src --ignore-unknown",
     "prepare": "husky install"
   },
