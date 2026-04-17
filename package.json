@@ -33,8 +33,8 @@
     "next": "^14.1.2",
     "react": "^18",
     "react-dom": "^18",
-    "zod": "^3.23.8",
-    "zod-error": "^1.5.0"
+    "zod": "^4.3.6",
+    "zod-error": "^2.0.0"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.4",
