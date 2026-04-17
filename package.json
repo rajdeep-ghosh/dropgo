@@ -10,6 +10,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file=.env src/lib/db/migrate.ts",
     "db:studio": "drizzle-kit studio",
+    "inngest:dev": "inngest-cli dev",
     "lint": "next lint",
     "format": "prettier --check ./src",
     "format:fix": "prettier --write ./src --ignore-unknown",
