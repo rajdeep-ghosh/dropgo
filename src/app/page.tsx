@@ -23,6 +23,7 @@ import type { FileMeta } from '@/types';
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [fileData, setFileData] =
     useState<Extract<FileMeta, { status: 'success' }>['data']>();
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
@@ -58,23 +59,29 @@ export default function HomePage() {
           throw new Error(body.message);
 
         case 'success': {
-          const fileUploadToS3Res = await fetch(body.data.url, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': selectedFile.type
-            },
-            body: selectedFile
+          const s3UploadOk = await new Promise<boolean>((resolve) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('PUT', body.data.url);
+            xhr.setRequestHeader('Content-Type', selectedFile.type);
+            xhr.upload.onprogress = (e) => {
+              if (e.lengthComputable) {
+                setUploadProgress(Math.round((e.loaded / e.total) * 100));
+              }
+            };
+            xhr.onload = () => resolve(xhr.status === 200);
+            xhr.onerror = () => resolve(false);
+            xhr.send(selectedFile);
           });
 
           const updateFileMetaRes = await fetch('/api/drop', {
             method: 'PATCH',
             body: JSON.stringify({
               id: body.data.id,
-              success: createFileMetaRes.ok && fileUploadToS3Res.ok
+              success: createFileMetaRes.ok && s3UploadOk
             })
           });
 
-          if (!fileUploadToS3Res.ok || !updateFileMetaRes.ok) {
+          if (!s3UploadOk || !updateFileMetaRes.ok) {
             throw new Error('Upload failed');
           }
 
@@ -96,6 +103,7 @@ export default function HomePage() {
       console.error(err);
     } finally {
       setIsLoading(false);
+      setUploadProgress(null);
     }
   }
 
@@ -177,12 +185,16 @@ export default function HomePage() {
               variant='secondary'
               disabled={selectedFile && !isLoading ? false : true}
               onClick={handleFileUpload}
-              className='w-full sm:w-auto'
+              className='w-full sm:w-auto sm:min-w-[10.5rem]'
             >
               {isLoading ? (
                 <>
                   <Loader2 className='mr-2 size-4 animate-spin' />
-                  Please wait
+                  <span className='tabular-nums'>
+                    {uploadProgress !== null
+                      ? `Uploading (${uploadProgress}%)`
+                      : 'Please wait'}
+                  </span>
                 </>
               ) : (
                 <>
